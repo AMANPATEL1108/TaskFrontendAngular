@@ -1,0 +1,43 @@
+.card {
+  cursor: grab;
+}
+
+.img-thumbnail {
+  max-width: 100px;
+}
+.task-menu-container {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.task-item {
+  padding: 10px;
+  background-color: #f0f0f0;
+  margin: 5px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.task-item.cdk-drag-preview {
+  background: #e0e0e0;
+}
+.task-list {
+  width: 100%;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 2px dashed #ccc;
+}
+
+.task-item {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  cursor: move;  /* Indicate that it's draggable */
+}
+
+.task-item:active {
+  background-color: #e0e0e0;
+}

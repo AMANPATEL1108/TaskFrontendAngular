@@ -1,0 +1,143 @@
+<!-- Header Section -->
+<div class="d-flex justify-content-between align-items-center p-3 bg-light border-bottom">
+  <h2>Task Management</h2>
+  <div>
+    <button *ngIf="authService.isAdmin()" routerLink="/home" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
+      + Add User
+    </button>
+    <button *ngIf="authService.isAdmin()" routerLink="/home" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addListModal">
+      + Create Task List
+    </button>
+    <a routerLink="/login" class="btn btn-danger">Logout</a>
+  </div>
+</div>
+
+<!-- Document Dashboard -->
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Document Dashboard</h3>
+    <button class="btn btn-primary" (click)="openAdd()">+ Add Document</button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="table-light">
+      <tr>
+        <th>Document Name</th>
+        <th>Person Name</th>
+        <th>Created Date</th>
+        <th>Updated Date</th>
+        <th class="text-center">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let doc of documents">
+        <td>{{ doc.documentName }}</td>
+        <td>{{ doc.ownerofDocument }}</td>
+        <td>{{ doc.createdDate | date: 'shortDate' }}</td>
+        <td>{{ doc.updateddate | date: 'shortDate' }}</td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-warning me-2" (click)="openEdit(doc)">Edit</button>
+          <button class="btn btn-sm btn-danger" (click)="confirmDelete(doc)">Delete</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add/Edit Document Modal -->
+<div class="modal fade" id="addDocumentModal" tabindex="-1" aria-labelledby="addDocumentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form (ngSubmit)="submitDocument()" #documentForm="ngForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addDocumentModalLabel">{{ editMode ? 'Edit Document' : 'Add Document' }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body row g-3">
+          <!-- Document Name -->
+          <div class="col-md-6">
+            <label for="documentName" class="form-label">Document Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="documentName"
+              name="documentName"
+              [(ngModel)]="newDocument.documentName"
+              #documentNameRef="ngModel"
+              required
+              [class.is-invalid]="documentNameRef.invalid && documentNameRef.touched"
+            />
+            <div class="invalid-feedback" *ngIf="documentNameRef.invalid && documentNameRef.touched">
+              Document Name is required.
+            </div>
+          </div>
+
+          <!-- Person Name -->
+          <div class="col-md-6">
+            <label for="personName" class="form-label">Person Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="personName"
+              name="ownerofDocument"
+              [(ngModel)]="newDocument.ownerofDocument"
+              #personNameRef="ngModel"
+              required
+              [class.is-invalid]="personNameRef.invalid && personNameRef.touched"
+            />
+            <div class="invalid-feedback" *ngIf="personNameRef.invalid && personNameRef.touched">
+              Person Name is required.
+            </div>
+          </div>
+
+          <!-- File Upload -->
+          <div class="col-12">
+            <label for="documentFile" class="form-label">Upload PDF</label>
+            <input
+              type="file"
+              class="form-control"
+              id="documentFile"
+              (change)="onFileChange($event)"
+              accept=".pdf"
+              [class.is-invalid]="!selectedFile && fileTouched"
+              (blur)="fileTouched = true"
+              [required]="!editMode"
+            />
+            <div class="invalid-feedback" *ngIf="!selectedFile && fileTouched && !editMode">
+              Please upload a valid PDF file.
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success" [disabled]="!documentForm.form.valid || (!selectedFile && !editMode)">
+            {{ editMode ? 'Update' : 'Add' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete "<strong>{{ deleteTarget?.documentName }}</strong>"?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-danger" (click)="deleteDocument()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

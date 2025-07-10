@@ -1,0 +1,42 @@
+# Node dependencies
+/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+
+# Angular build outputs
+/dist/
+/out-tsc/
+
+# Angular environment files (optional - if you're storing secrets locally)
+/src/environments/environment.*.ts
+
+# IDEs and editors
+/.idea/
+/.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Compiled files
+*.js
+*.js.map
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Coverage reports
+/coverage/
+
+# Misc
+/.angular/cache/
+/.angular/

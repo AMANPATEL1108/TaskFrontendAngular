@@ -1,0 +1,11 @@
+/* styles.css */
+.custom-toastr {
+  top: 110px !important;   /* Adjust vertically below your navbar/header */
+  right: 20px !important;
+  z-index: 1060 !important;
+}
+
+.toast-top-right {
+  z-index: 1060 !important; /* Higher than Bootstrap modal (z-index: 1050) */
+}
+
