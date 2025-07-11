@@ -80,7 +80,11 @@ export class DocumentDashboardComponent implements OnInit {
 
     const form = new FormData();
     form.append("person", new Blob([JSON.stringify(this.newDocument)], { type: "application/json" }));
-    if (this.selectedFile) form.append("file", this.selectedFile);
+
+    // If a file is selected, append it to the form
+    if (this.selectedFile) {
+      form.append("file", this.selectedFile);
+    }
 
     const request$ = this.editMode ? this.http.put(url, form) : this.http.post(url, form);
 
@@ -98,6 +102,7 @@ export class DocumentDashboardComponent implements OnInit {
       }
     });
   }
+
 
   confirmDelete(doc: any): void {
     this.deleteTarget = doc;

@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import {LoginComponent} from "./components/login/login.component";
 import {HomeComponent} from "./components/home/home.component";
 import {DocumentDashboardComponent} from "./components/document-dashboard/document-dashboard.component";
+import {EmployeeSectionComponent} from "./components/employee-section/employee-section.component";
+import {LeaveSectionComponent} from "./components/leavesection/leavesection.component";
 
 const routes: Routes = [
   {path:"",redirectTo:"login",pathMatch:"full"},
@@ -12,6 +14,12 @@ const routes: Routes = [
   },
   {
     path:"document-dashboard",component:DocumentDashboardComponent
+  },
+  {
+    path:"leavesection",component:LeaveSectionComponent
+  },
+  {
+    path:"document",component:EmployeeSectionComponent
   }
 
 ];

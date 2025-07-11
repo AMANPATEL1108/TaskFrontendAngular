@@ -26,6 +26,7 @@ export class HomeComponent implements OnInit {
   currentColumn!: TaskMenu;
   users: User[] = [];
   addUserForm: FormGroup;
+  selectedTaskListIdToDelete: number | null = null;
 
   taskForm: FormGroup;
   addListForm: FormGroup;
@@ -82,13 +83,19 @@ export class HomeComponent implements OnInit {
       next: data => {
         this.taskMenus = data.map(menu => ({
           ...menu,
-          id: menu.id ?? menu._id ?? 0, // Ensure id is valid
-          tasks: (menu.tasks ?? []).map(task => ({
-            ...task,
-            id: task.id ?? task._id ?? 0, // Ensure id is valid
-            assignedTo: typeof task.assignedTo === 'string' ? { username: task.assignedTo } : task.assignedTo || { username: 'Unknown' },
-            status: task.status || 'Not Started'
-          }))
+          id: menu.id ?? menu._id ?? 0,
+          tasks: (menu.tasks ?? []).map(task => {
+            const userId = task.userId ?? undefined;
+            const user = this.users.find(u => u.id === userId);
+
+            return {
+              ...task,
+              id: task.id ?? task._id ?? 0,
+              assignedTo: user ? { username: user.username } : 'Unassigned',
+              status: task.status || 'Not Started',
+              userId: userId // ✅ This is now number or undefined
+            };
+          })
         }));
       },
       error: err => {
@@ -97,6 +104,8 @@ export class HomeComponent implements OnInit {
       }
     });
   }
+
+
 
   createUser(): void {
     if (this.addUserForm.invalid) return;
@@ -254,19 +263,6 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  deleteTaskList(menuId: number): void {
-    if (confirm('Are you sure you want to delete this entire task list and all its tasks?')) {
-      this.svc.deleteTaskMenu(menuId).subscribe({
-        next: () => {
-          this.taskMenus = this.taskMenus.filter(menu => menu.id !== menuId);
-        },
-        error: err => {
-          console.error('Failed to delete task list:', err);
-          alert('Error deleting task list');
-        }
-      });
-    }
-  }
 
 
   onTaskDrop(event: CdkDragDrop<Task[]>, targetMenu: TaskMenu) {
@@ -308,26 +304,46 @@ export class HomeComponent implements OnInit {
       .map(m => 'menu-' + m.id); // 🔧 Matches the [id] in template
   }
 
-  getAssignedToName(assignedTo: string | number | { username: string } | null | undefined): string {
+  getAssignedToName(assignedTo: string | { username: string } | null | undefined): string {
     if (!assignedTo) return 'Unassigned';
 
-    // If assignedTo is an object with username, return username directly
     if (typeof assignedTo === 'object' && 'username' in assignedTo) {
       return assignedTo.username;
     }
 
-    // If assignedTo is a string (maybe user ID as string), convert to number
-    const userId = typeof assignedTo === 'string' ? Number(assignedTo) : assignedTo;
-
-    if (typeof userId !== 'number' || isNaN(userId)) {
-      return 'Unassigned';
+    if (typeof assignedTo === 'string') {
+      const userId = Number(assignedTo);
+      if (!isNaN(userId)) {
+        const user = this.users.find(u => u.id === userId);
+        return user ? user.username : 'Unassigned';
+      }
+      return assignedTo; // fallback
     }
 
-    const user = this.users.find(u => u.id === userId);
-    return user ? user.username : 'Unassigned';
+    return 'Unassigned';
   }
 
+  openDeleteConfirmation(menuId: number): void {
+    this.selectedTaskListIdToDelete = menuId;
+    const modalEl = document.getElementById('confirmDeleteListModal');
+    if (modalEl) new bootstrap.Modal(modalEl).show();
+  }
 
-
+  confirmDeleteTaskList(): void {
+    if (this.selectedTaskListIdToDelete !== null) {
+      this.svc.deleteTaskMenu(this.selectedTaskListIdToDelete).subscribe({
+        next: () => {
+          this.taskMenus = this.taskMenus.filter(menu => menu.id !== this.selectedTaskListIdToDelete);
+          const modalEl = document.getElementById('confirmDeleteListModal');
+          if (modalEl) bootstrap.Modal.getInstance(modalEl)?.hide();
+          this.selectedTaskListIdToDelete = null;
+        },
+        error: err => {
+          console.error('Failed to delete task list:', err);
+          alert('Error deleting task list');
+        }
+      });
+    }
+  }
 
 }

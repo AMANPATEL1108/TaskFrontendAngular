@@ -1,0 +1,74 @@
+<!-- Header Section -->
+<div class="d-flex justify-content-between align-items-center p-3 bg-light border-bottom">
+  <h2>Task Management</h2>
+  <div>
+    <button *ngIf="authService.isEmployye()" routerLink="/home" class="btn btn-outline-primary me-2" data-bs-toggle="modal">
+      Home
+    </button>
+
+    <button *ngIf="authService.isAdmin()" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addListModal">
+      + Create Task List
+    </button>
+
+    <a routerLink="/login" class="btn btn-danger">Logout</a>
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-bordered table-striped">
+    <thead class="table-light">
+    <tr>
+      <th>Document Name</th>
+      <th>Person Name</th>
+      <th>Created Date</th>
+      <th>Updated Date</th>
+      <th>View Documents</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let doc of documents">
+      <td>{{ doc.documentName }}</td>
+      <td>{{ doc.ownerofDocument }}</td>
+      <td>{{ doc.createdDate | date: 'shortDate' }}</td>
+      <td>{{ doc.updateddate | date: 'shortDate' }}</td>
+      <td class="text-center">
+        <button class="btn btn-sm btn-warning me-2" (click)="viewDocuments(doc)">View</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Right side sliding panel for viewing document -->
+<!-- Right side sliding panel for viewing document -->
+<div
+  class="position-fixed top-0 end-0 h-100 bg-white shadow-lg border-start"
+  style="width: 350px; z-index: 1050; overflow-y: auto;"
+  *ngIf="selectedDocument"
+>
+  <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+    <h5 class="mb-0">Document Details</h5>
+    <button class="btn btn-sm btn-outline-secondary" (click)="closeSidebar()">×</button>
+  </div>
+
+  <div class="p-3">
+    <p><strong>Document Name:</strong> {{ selectedDocument.documentName }}</p>
+    <p><strong>Owner:</strong> {{ selectedDocument.ownerofDocument }}</p>
+    <p><strong>Created Date:</strong> {{ selectedDocument.createdDate | date:'medium' }}</p>
+    <p><strong>Updated Date:</strong> {{ selectedDocument.updateddate | date:'medium' }}</p>
+
+    <hr>
+
+    <h6>Document Preview:</h6>
+    <iframe
+      *ngIf="selectedDocument.pdfUrlApi"
+      [src]="selectedDocument.pdfUrlApi | safeUrl"
+      width="100%"
+      height="400px"
+      style="border:none;"
+    ></iframe>
+
+
+    <p *ngIf="!selectedDocument.pdfUrl" class="text-muted">No preview available</p>
+  </div>
+</div>

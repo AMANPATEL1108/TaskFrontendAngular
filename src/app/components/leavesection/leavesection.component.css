@@ -1,0 +1,33 @@
+/* Fix modal backdrop & centering */
+.modal.fade.show.d-block {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  overflow: auto;
+}
+
+/* Customize modal header colors */
+.modal-header.bg-primary {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.modal-header.bg-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Button white close icon */
+.btn-close-white {
+  filter: invert(1);
+}
+
+/* Responsive inputs spacing */
+@media (max-width: 576px) {
+  .modal-dialog {
+    margin: 1rem;
+  }
+}

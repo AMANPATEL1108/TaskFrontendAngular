@@ -1,0 +1,266 @@
+<div class="d-flex justify-content-between align-items-center p-3 bg-light border-bottom">
+  <h2>Task Management</h2>
+  <div>
+    <button routerLink="/leavesection" class="btn btn-outline-primary me-2">Leave Section</button>
+    <button routerLink="/home" class="btn btn-outline-primary me-2">Home</button>
+    <a routerLink="/login" class="btn btn-danger">Logout</a>
+  </div>
+</div>
+
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <h2>Leave Requests</h2>
+    <button class="btn btn-primary" (click)="openFormModal()">Add Leave</button>
+  </div>
+
+  <!-- Form Modal -->
+  <div
+    *ngIf="showFormModal"
+    class="modal fade show d-block"
+    tabindex="-1"
+    style="background: rgba(0, 0, 0, 0.5)"
+  >
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">{{ currentEdit ? 'Edit Leave' : 'Add Leave' }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="closeFormModal()"></button>
+        </div>
+
+        <form #f="ngForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="modal-body">
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Subject <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  name="subject"
+                  [(ngModel)]="formData.subject"
+                  class="form-control"
+                  placeholder="Enter subject"
+                  required
+                />
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Leave Date <span class="text-danger">*</span></label>
+                <input
+                  type="date"
+                  name="leaveDate"
+                  [(ngModel)]="formData.leaveDate"
+                  class="form-control"
+                  required
+                />
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Day Type <span class="text-danger">*</span></label>
+                <select
+                  name="dayType"
+                  [(ngModel)]="formData.dayType"
+                  class="form-select"
+                  required
+                >
+                  <option value="Full Day">Full Day</option>
+                  <option value="Half Day">Half Day</option>
+                </select>
+              </div>
+
+              <div class="col-md-4" *ngIf="formData.dayType === 'Half Day'">
+                <label class="form-label fw-semibold">Half Type</label>
+                <select
+                  name="halfType"
+                  [(ngModel)]="formData.halfType"
+                  class="form-select"
+                >
+                  <option value="First Half">First Half</option>
+                  <option value="Second Half">Second Half</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Description</label>
+              <textarea
+                name="description"
+                [(ngModel)]="formData.description"
+                class="form-control"
+                rows="3"
+                placeholder="Enter description"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="closeFormModal()"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="!formData.subject || !formData.leaveDate"
+            >
+              {{ currentEdit ? 'Update' : 'Submit' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leave Table -->
+  <table class="table table-striped mt-4" *ngIf="leaves.length > 0; else noLeaves">
+    <thead class="table-dark">
+    <tr>
+      <th>Subject</th>
+      <th>User</th>
+      <th>Leave Date</th>
+      <th>Day Type</th>
+      <th>Status</th>
+      <th>Description / Decline Reason</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let leave of leaves">
+      <td>{{ leave.subject }}</td>
+      <td>{{ leave.user.username }}</td>
+      <td>{{ leave.leavedate | date: 'mediumDate' }}</td>
+      <td>
+        {{ leave.daytype }}
+        <span *ngIf="leave.daytype === 'Half Day' && leave.halfType">
+            ({{ leave.halfType }})
+          </span>
+      </td>
+      <td
+        [ngClass]="{
+            'text-success': leave.statusofleave === 'Accepted',
+            'text-danger': leave.statusofleave === 'Declined',
+            'text-warning': leave.statusofleave === 'Pending'
+          }"
+      >
+        {{ leave.statusofleave }}
+      </td>
+      <td>
+        <div *ngIf="leave.statusofleave === 'Declined'; else descBlock">
+          {{ leave.reasonfordeclineleave || '-' }}
+        </div>
+        <ng-template #descBlock>{{ leave.description || '-' }}</ng-template>
+      </td>
+      <td>
+        <button
+          class="btn btn-sm btn-outline-primary me-1"
+          (click)="editLeave(leave)"
+          [disabled]="leave.statusofleave !== 'Pending'"
+        >
+          Edit
+        </button>
+
+        <button
+          class="btn btn-sm btn-outline-danger me-1"
+          (click)="deleteLeave(leave.id)"
+          [disabled]="leave.statusofleave !== 'Pending'"
+        >
+          Delete
+        </button>
+
+        <button
+          *ngIf="authService.isAdmin() && leave.statusofleave === 'Pending'"
+          class="btn btn-sm btn-success me-1"
+          (click)="acceptLeave(leave)"
+        >
+          Accept
+        </button>
+
+        <button
+          *ngIf="authService.isAdmin() && leave.statusofleave === 'Pending'"
+          class="btn btn-sm btn-warning"
+          (click)="declineLeave(leave)"
+        >
+          Decline
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noLeaves>
+    <div class="alert alert-info mt-4" role="alert">
+      No leave requests found.
+    </div>
+  </ng-template>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div
+  *ngIf="deleteTarget"
+  class="modal fade show d-block"
+  tabindex="-1"
+  style="background: rgba(0, 0, 0, 0.5)"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          (click)="cancelDelete()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete leave request "<strong
+      >{{ deleteTarget.subject }}</strong
+      >"?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+        <button class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Decline Leave Modal -->
+<div
+  *ngIf="declineTarget"
+  class="modal fade show d-block"
+  tabindex="-1"
+  style="background: rgba(0, 0, 0, 0.5)"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title">Decline Leave Request</h5>
+        <button type="button" class="btn-close" (click)="cancelDecline()"></button>
+      </div>
+      <div class="modal-body">
+        <label for="declineReason" class="form-label fw-semibold"
+        >Reason for Declining:</label
+        >
+        <textarea
+          id="declineReason"
+          [(ngModel)]="declineReason"
+          class="form-control"
+          rows="3"
+          placeholder="Enter decline reason"
+          required
+        ></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelDecline()">Cancel</button>
+        <button
+          class="btn btn-warning"
+          [disabled]="!declineReason.trim()"
+          (click)="confirmDecline(declineReason)"
+        >
+          Decline Leave
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
