@@ -1,16 +1,4 @@
-<!-- Header Section -->
-<div class="d-flex justify-content-between align-items-center p-3 bg-light border-bottom">
-  <h2>Task Management</h2>
-  <div>
-    <button *ngIf="authService.isAdmin()" routerLink="/home" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
-      + Add User
-    </button>
-    <button *ngIf="authService.isAdmin()" routerLink="/home" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addListModal">
-      + Create Task List
-    </button>
-    <a routerLink="/login" class="btn btn-danger">Logout</a>
-  </div>
-</div>
+
 
 <!-- Document Dashboard -->
 <div class="container mt-4">

@@ -1,0 +1,61 @@
+<div class="d-flex justify-content-between align-items-center p-3 bg-light border-bottom">
+  <h2>Task Management</h2>
+  <div class="d-flex align-items-center">
+
+    <!-- Buttons -->
+    <button routerLink="/home" class="btn btn-outline-primary me-2">Home</button>
+
+    <button *ngIf="authService.isAdmin()" routerLink="/editusers" class="btn btn-outline-primary me-2">
+      Edit Users
+    </button>
+
+    <button routerLink="/upcomingbithdays" class="btn btn-outline-primary me-2">
+      Up-Comming BirthDays
+    </button>
+
+    <button routerLink="/leavesection" class="btn btn-outline-primary me-2">
+      Leave Section
+    </button>
+
+    <button *ngIf="authService.isEmployye()" routerLink="/document" class="btn btn-outline-primary me-2">
+      User Documents
+    </button>
+
+    <button *ngIf="authService.isAdmin()" routerLink="/document-dashboard" class="btn btn-outline-primary me-2">
+      + Add Documents
+    </button>
+
+    <button *ngIf="authService.isAdmin()" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
+      + Add User
+    </button>
+
+    <button *ngIf="authService.isAdmin()" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addListModal">
+      + Create Task List
+    </button>
+
+    <!-- Profile Image + Dropdown -->
+    <div class="dropdown">
+      <button
+        class="btn btn-light dropdown-toggle d-flex align-items-center"
+        type="button"
+        id="profileDropdown"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+            <img
+              [src]="userImageUrl || defaultImageUrl"
+              (error)="userImageUrl = defaultImageUrl"
+              class="img-fluid rounded"
+              alt="Profile Image"
+            />
+
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+        <li><a class="dropdown-item" routerLink="/profile">👤 Profile</a></li>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item text-danger" (click)="logout()">🔓 Logout</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>

@@ -1,16 +1,8 @@
-<div class="d-flex justify-content-between align-items-center p-3 bg-light border-bottom">
-  <h2>Task Management</h2>
-  <div>
-    <button routerLink="/leavesection" class="btn btn-outline-primary me-2">Leave Section</button>
-    <button routerLink="/home" class="btn btn-outline-primary me-2">Home</button>
-    <a routerLink="/login" class="btn btn-danger">Logout</a>
-  </div>
-</div>
 
 <div class="container my-4">
   <div class="d-flex justify-content-between align-items-center">
     <h2>Leave Requests</h2>
-    <button class="btn btn-primary" (click)="openFormModal()">Add Leave</button>
+    <button *ngIf="authService.isEmployye()" class="btn btn-primary" (click)="openFormModal()">Add Leave</button>
   </div>
 
   <!-- Form Modal -->
@@ -113,6 +105,7 @@
   </div>
 
   <!-- Leave Table -->
+  <!-- Leave Table -->
   <table class="table table-striped mt-4" *ngIf="leaves.length > 0; else noLeaves">
     <thead class="table-dark">
     <tr>
@@ -121,7 +114,7 @@
       <th>Leave Date</th>
       <th>Day Type</th>
       <th>Status</th>
-      <th>Description / Decline Reason</th>
+      <th>Description</th>
       <th>Actions</th>
     </tr>
     </thead>
@@ -133,134 +126,148 @@
       <td>
         {{ leave.daytype }}
         <span *ngIf="leave.daytype === 'Half Day' && leave.halfType">
-            ({{ leave.halfType }})
-          </span>
+          ({{ leave.halfType }})
+        </span>
       </td>
       <td
         [ngClass]="{
-            'text-success': leave.statusofleave === 'Accepted',
-            'text-danger': leave.statusofleave === 'Declined',
-            'text-warning': leave.statusofleave === 'Pending'
-          }"
+          'text-success': leave.statusofleave === 'Accepted',
+          'text-danger': leave.statusofleave === 'Declined',
+          'text-warning': leave.statusofleave === 'Pending'
+        }"
       >
         {{ leave.statusofleave }}
+
+        <svg
+          *ngIf="leave.statusofleave === 'Declined'"
+          (click)="openDeclineReasonModal(leave)"
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-info-circle"
+          viewBox="0 0 16 16"
+          style="cursor: pointer;"
+        >
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+        </svg>
       </td>
+      <td>{{ leave.description || '-' }}</td>
       <td>
-        <div *ngIf="leave.statusofleave === 'Declined'; else descBlock">
-          {{ leave.reasonfordeclineleave || '-' }}
-        </div>
-        <ng-template #descBlock>{{ leave.description || '-' }}</ng-template>
+        <!-- Show Checked if leave is Accepted or Declined -->
+        <span *ngIf="isActionDisabled(leave)" class="badge bg-secondary">
+    ✔ Checked
+  </span>
+
+        <!-- Employee actions -->
+        <ng-container *ngIf="authService.isEmployye() && !isActionDisabled(leave)">
+          <button
+            class="btn btn-sm btn-outline-primary me-1"
+            (click)="editLeave(leave)"
+            [disabled]="leave.statusofleave !== 'Pending'"
+          >
+            Edit
+          </button>
+
+          <button
+            class="btn btn-sm btn-outline-danger me-1"
+            (click)="deleteLeave(leave.id)"
+            [disabled]="leave.statusofleave !== 'Pending'"
+          >
+            Delete
+          </button>
+        </ng-container>
+
+        <!-- Admin actions -->
+        <ng-container *ngIf="authService.isAdmin() && leave.statusofleave === 'Pending'">
+          <button class="btn btn-sm btn-success me-1" (click)="acceptLeave(leave)">Accept</button>
+          <button class="btn btn-sm btn-warning" (click)="showDeclineReasonAdminModal(leave)">Decline</button>
+        </ng-container>
       </td>
-      <td>
-        <button
-          class="btn btn-sm btn-outline-primary me-1"
-          (click)="editLeave(leave)"
-          [disabled]="leave.statusofleave !== 'Pending'"
-        >
-          Edit
-        </button>
 
-        <button
-          class="btn btn-sm btn-outline-danger me-1"
-          (click)="deleteLeave(leave.id)"
-          [disabled]="leave.statusofleave !== 'Pending'"
-        >
-          Delete
-        </button>
-
-        <button
-          *ngIf="authService.isAdmin() && leave.statusofleave === 'Pending'"
-          class="btn btn-sm btn-success me-1"
-          (click)="acceptLeave(leave)"
-        >
-          Accept
-        </button>
-
-        <button
-          *ngIf="authService.isAdmin() && leave.statusofleave === 'Pending'"
-          class="btn btn-sm btn-warning"
-          (click)="declineLeave(leave)"
-        >
-          Decline
-        </button>
-      </td>
     </tr>
     </tbody>
   </table>
 
+  <!-- No leaves message -->
   <ng-template #noLeaves>
-    <div class="alert alert-info mt-4" role="alert">
-      No leave requests found.
+    <div class="alert alert-warning" role="alert">
+      No leave records available.
     </div>
   </ng-template>
-</div>
 
-<!-- Delete Confirmation Modal -->
-<div
-  *ngIf="deleteTarget"
-  class="modal fade show d-block"
-  tabindex="-1"
-  style="background: rgba(0, 0, 0, 0.5)"
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title">Confirm Delete</h5>
-        <button
-          type="button"
-          class="btn-close btn-close-white"
-          (click)="cancelDelete()"
-        ></button>
+  <!-- Delete Confirmation Modal -->
+  <div
+    *ngIf="deleteTarget"
+    class="modal fade show d-block"
+    tabindex="-1"
+    style="background: rgba(0, 0, 0, 0.5)"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">Confirm Delete</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cancelDelete()"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete the leave request <strong>"{{ deleteTarget.subject }}"</strong>?
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+          <button class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+        </div>
       </div>
-      <div class="modal-body">
-        Are you sure you want to delete leave request "<strong
-      >{{ deleteTarget.subject }}</strong
-      >"?
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
-        <button class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+    </div>
+  </div>
+
+  <!-- No leaves message -->
+  <ng-template #noLeaves>
+    <div class="alert alert-warning" role="alert">
+      No leave records available.
+    </div>
+  </ng-template>
+
+  <!-- Decline Reason Modal -->
+  <div
+    *ngIf="declineReasonModalVisible"
+    class="modal fade show d-block"
+    tabindex="-1"
+    style="background: rgba(0, 0, 0, 0.5)"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-dark">
+          <h5 class="modal-title">Reason for Decline</h5>
+          <button type="button" class="btn-close" (click)="closeDeclineReasonModal()"></button>
+        </div>
+        <div class="modal-body">
+          <p>{{ declineReason }}</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeDeclineReasonModal()">Close</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Decline Leave Modal -->
-<div
-  *ngIf="declineTarget"
-  class="modal fade show d-block"
-  tabindex="-1"
-  style="background: rgba(0, 0, 0, 0.5)"
->
+<!-- Decline Reason Modal ADmin-->
+<div *ngIf="delineReasonAdmin" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.5)">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-warning text-dark">
-        <h5 class="modal-title">Decline Leave Request</h5>
-        <button type="button" class="btn-close" (click)="cancelDecline()"></button>
+        <h5 class="modal-title">Reason for Decline</h5>
+        <button type="button" class="btn-close" (click)="closeDeclineReasonModal2()"></button>
       </div>
       <div class="modal-body">
-        <label for="declineReason" class="form-label fw-semibold"
-        >Reason for Declining:</label
-        >
-        <textarea
-          id="declineReason"
-          [(ngModel)]="declineReason"
-          class="form-control"
-          rows="3"
-          placeholder="Enter decline reason"
-          required
-        ></textarea>
+        <textarea [(ngModel)]="declineReason" class="form-control" rows="3" placeholder="Please provide a reason..."></textarea>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="cancelDecline()">Cancel</button>
-        <button
-          class="btn btn-warning"
-          [disabled]="!declineReason.trim()"
-          (click)="confirmDecline(declineReason)"
-        >
-          Decline Leave
-        </button>
+        <button class="btn btn-secondary" (click)="closeDeclineReasonModal2()">Close</button>
+        <button class="btn btn-danger" (click)="confirmDecline()">Confirm Decline</button>
       </div>
     </div>
   </div>
 </div>
+

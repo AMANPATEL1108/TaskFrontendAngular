@@ -9,13 +9,14 @@ import { LeaveService } from '../../services/leave.service';
   templateUrl: './leavesection.component.html',
 })
 export class LeaveSectionComponent implements OnInit {
+  declineReasonModalVisible = false;
   leaves: Leave[] = [];
   showFormModal = false;
   deleteTarget: Leave | null = null;
   currentEdit: Leave | null = null;
-  declineTarget: Leave | null = null;
-
-  declineReason = '';
+  declineTarget: any;
+  declineReason: string = '';
+  delineReasonAdmin: boolean = false;
 
   formData = {
     subject: '',
@@ -24,6 +25,7 @@ export class LeaveSectionComponent implements OnInit {
     dayType: 'Full Day' as 'Full Day' | 'Half Day',
     halfType: 'First Half' as 'First Half' | 'Second Half',
   };
+
 
   userId: number | null = null;
 
@@ -44,25 +46,26 @@ export class LeaveSectionComponent implements OnInit {
         ...l,
         leaveDate: l.leavedate,
         dayType: l.daytype,
-        status: l.statusofleave,
-        description: l.description || l.reasonfordeclineleave || '',
-        userId: l.user?.id,
-        userName: l.user?.username || 'Unknown',
-        declineReason: l.reasonfordeclineleave || '',
+        statusofleave: l.statusofleave,
+        description: l.description || '',
+        user: l.user,
         halfType: l.halfType,
+        reasonfordeclineleave: l.reasonfordeclineleave,
       }));
 
       if (!this.authService.isAdmin() && this.userId !== null) {
-        this.leaves = this.leaves.filter((l) => l.user.id === this.userId);
+        this.leaves = this.leaves.filter((l) => l.user?.id === this.userId);
       }
     });
   }
 
   openFormModal(): void {
-    this.resetForm();
+    this.resetForm(); // Only reset if you're adding
+    this.currentEdit = null;
     this.showFormModal = true;
     document.body.style.overflow = 'hidden';
   }
+
 
   closeFormModal(): void {
     this.showFormModal = false;
@@ -71,17 +74,29 @@ export class LeaveSectionComponent implements OnInit {
 
   editLeave(leave: Leave): void {
     this.currentEdit = { ...leave };
+
+    // Convert date to yyyy-MM-dd format
+    const formattedDate = leave.leavedate
+      ? new Date(leave.leavedate).toISOString().split('T')[0]
+      : '';
+
     this.formData = {
-      subject: leave.subject,
-      description: leave.description,
-      leaveDate: new Date(leave.leavedate).toISOString().substring(0, 10),
-      dayType: leave.daytype === 'Half Day' ? 'Half Day' : 'Full Day',
+      subject: leave.subject || '',
+      description: leave.description || '',
+      leaveDate: formattedDate,
+      dayType: leave.daytype as 'Full Day' | 'Half Day',
       halfType: leave.halfType || 'First Half',
     };
-    this.openFormModal();
+
+    this.showFormModal = true;
+    document.body.style.overflow = 'hidden';
   }
 
+
+
+
   deleteLeave(id: number): void {
+    // Show confirmation modal before deletion
     this.deleteTarget = this.leaves.find((l) => l.id === id) || null;
   }
 
@@ -122,6 +137,7 @@ export class LeaveSectionComponent implements OnInit {
       statusofleave: 'Pending',
       reasonfordeclineleave: '',
       user: { id: userId },
+      halfType: this.formData.dayType === 'Half Day' ? this.formData.halfType : undefined,
     };
 
     this.leaveService.createLeave(payload).subscribe({
@@ -159,34 +175,60 @@ export class LeaveSectionComponent implements OnInit {
   }
 
   acceptLeave(leave: Leave): void {
-    leave.statusofleave = 'Accepted';
-    leave.updateDate = new Date().toISOString();
-    this.leaveService.updateLeaveById(leave.id, leave).subscribe(() => {
-      this.toastr.success('Leave accepted');
-      this.loadLeaves();
-    });
-  }
-
-  declineLeave(leave: Leave): void {
-    this.declineTarget = leave;
-    this.declineReason = '';
-  }
-
-  confirmDecline(reason: string): void {
-    if (this.declineTarget) {
-      const l = this.declineTarget;
-      l.statusofleave = 'Declined';
-      l.reasonfordeclineleave = reason;
-      l.updateDate = new Date().toISOString();
-      this.leaveService.updateLeaveById(l.id, l).subscribe(() => {
-        this.toastr.warning('Leave declined');
-        this.declineTarget = null;
+    if (leave.statusofleave === 'Pending') {
+      const updatedLeave = {
+        ...leave,
+        statusofleave: 'Accepted',
+        updateDate: new Date().toISOString(),
+      };
+      this.leaveService.updateLeaveById(leave.id, updatedLeave).subscribe(() => {
+        this.toastr.success('Leave accepted');
         this.loadLeaves();
       });
     }
   }
 
-  cancelDecline(): void {
+  openDeclineReasonModal(leave: Leave) {
+    this.declineReason = leave.reasonfordeclineleave || '';
+    this.declineReasonModalVisible = true;
+  }
+
+  closeDeclineReasonModal() {
+    this.declineReasonModalVisible = false;
+  }
+
+  showDeclineReasonAdminModal(leave: Leave): void {
+    this.declineTarget = leave;
+    this.delineReasonAdmin = true;
+    this.declineReason = '';
+  }
+
+  closeDeclineReasonModal2() {
+    this.delineReasonAdmin = false;
+  }
+
+  confirmDecline() {
+    if (this.declineTarget && this.declineReason.trim()) {
+      this.declineTarget.statusofleave = 'Declined';
+      this.declineTarget.reasonfordeclineleave = this.declineReason;
+      this.declineTarget.updateDate = new Date().toISOString();
+
+      this.leaveService.updateLeaveById(this.declineTarget.id, this.declineTarget).subscribe(
+        () => {
+          this.toastr.success('Leave request declined successfully.');
+          this.loadLeaves();
+          this.closeDeclineReasonModal2();
+        },
+        (error) => {
+          this.toastr.error('Failed to decline leave. Please try again.');
+        }
+      );
+    } else {
+      this.toastr.error('Please provide a reason for the decline.');
+    }
+  }
+
+  cancelDecline() {
     this.declineTarget = null;
     this.declineReason = '';
   }
@@ -201,4 +243,10 @@ export class LeaveSectionComponent implements OnInit {
     };
     this.currentEdit = null;
   }
+
+  // Helper method to disable buttons if status is Accepted or Declined
+  isActionDisabled(leave: Leave): boolean {
+    return leave.statusofleave === 'Accepted' || leave.statusofleave === 'Declined';
+  }
+
 }

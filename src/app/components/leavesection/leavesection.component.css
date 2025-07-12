@@ -31,3 +31,8 @@
     margin: 1rem;
   }
 }
+
+
+.decline-icon:hover {
+  cursor: pointer; /* Changes cursor to a hand icon when hovered */
+}

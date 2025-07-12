@@ -1,0 +1,86 @@
+<table class="table table-bordered">
+  <thead class="table-light">
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Role</th>
+      <th>DOB</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let u of users">
+      <td>{{ u.id }}</td>
+      <td>{{ u.username }}</td>
+      <td>{{ u.role }}</td>
+      <td>{{ u.dateofbirth | date }}</td>
+      <td>
+        <button class="btn btn-primary btn-sm" (click)="openEdit(u)">Edit</button>
+        <button class="btn btn-danger btn-sm ms-1" (click)="openDelete(u)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Edit User Modal -->
+<div *ngIf="editModalOpen" class="modal fade show d-block" tabindex="-1" aria-modal="true" role="dialog" style="background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog">
+    <form [formGroup]="editUserForm" (ngSubmit)="submitEdit()" class="modal-content" novalidate>
+      <div class="modal-header">
+        <h5 class="modal-title">Edit User</h5>
+        <button type="button" class="btn-close" (click)="cancelEdit()"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Username (disabled like DOB) -->
+        <div class="mb-3">
+          <label>Username</label>
+          <input formControlName="username" class="form-control" [disabled]="true" />
+          <div *ngIf="f['username'].invalid && f['username'].touched" class="text-danger small">
+            Required
+          </div>
+        </div>
+
+        <!-- Role (editable) -->
+        <div class="mb-3">
+          <label>Role</label>
+          <select formControlName="role" class="form-select">
+            <option value="USER">User</option>
+            <option value="ADMIN">Admin</option>
+            <option value="EMPLOYEE">Employee</option>
+          </select>
+        </div>
+
+        <!-- Date of Birth (disabled) -->
+        <div class="mb-3">
+          <label>Date of Birth</label>
+          <input type="date" formControlName="dateofbirth" class="form-control" [disabled]="true" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+        <button type="submit" class="btn btn-success" [disabled]="editUserForm.invalid">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="deleteModalOpen" class="modal fade show d-block" tabindex="-1" aria-modal="true" role="dialog" style="background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button type="button" class="btn-close" (click)="cancelDelete()"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete <strong>{{ targetUser?.username }}</strong>?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+        <button class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

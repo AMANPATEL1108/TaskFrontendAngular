@@ -1,7 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 .modal.fade.show.d-block {
   display: flex !important;
   align-items: center;
@@ -11,4 +17,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   z-index: 1050;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+.card {
+  background: #fff;
+  border-radius: 1rem;
+}
+
+.fw-semibold {
+  font-weight: 600;
 }

@@ -16,6 +16,11 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { EmployeeSectionComponent } from './components/employee-section/employee-section.component';
 import { SafeUrlPipe } from "./pipe/safe-url.pipe";
 import { LeaveSectionComponent } from "./components/leavesection/leavesection.component";
+import { BirthdaysectionComponent } from './components/birthdaysection/birthdaysection.component';
+import { EditusersComponent } from './components/editusers/editusers.component';
+import { HeaderComponent } from './components/header/header.component';
+import {RecaptchaModule} from "ng-recaptcha";
+import { ProfileComponent } from './components/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +29,11 @@ import { LeaveSectionComponent } from "./components/leavesection/leavesection.co
     DocumentDashboardComponent,
     EmployeeSectionComponent,
     SafeUrlPipe,
-    LeaveSectionComponent
+    LeaveSectionComponent,
+    BirthdaysectionComponent,
+    EditusersComponent,
+    HeaderComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -32,6 +41,7 @@ import { LeaveSectionComponent } from "./components/leavesection/leavesection.co
     ReactiveFormsModule,
     HttpClientModule,
     FormsModule,
+    RecaptchaModule,
     NgbModule,
     DragDropModule,
     HomeComponent,

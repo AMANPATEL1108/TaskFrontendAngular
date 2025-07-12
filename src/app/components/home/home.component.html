@@ -1,34 +1,4 @@
 
-<!-- Header Section -->
-<div class="d-flex justify-content-between align-items-center p-3 bg-light border-bottom">
-  <h2>Task Management</h2>
-  <div>
-    <button routerLink="/leavesection"  class="btn btn-outline-primary me-2" data-bs-toggle="modal" >
-      Leave Section
-    </button>
-    <button *ngIf="authService.isEmployye()" routerLink="/document"  class="btn btn-outline-primary me-2" data-bs-toggle="modal" >
-      User Documents
-    </button>
-    <button *ngIf="authService.isAdmin()" routerLink="/document-dashboard"  class="btn btn-outline-primary me-2" data-bs-toggle="modal" >
-      + Add Documents
-    </button>
-    <!-- Add Task List Button -->
-    <!-- Add User Button -->
-    <button *ngIf="authService.isAdmin()" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
-      + Add User
-    </button>
-
-
-    <!-- Add Task List Button -->
-
-    <button *ngIf="authService.isAdmin()" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#addListModal">
-      + Create Task List
-    </button>
-
-    <!-- Logout Button -->
-    <a routerLink="/login" class="btn btn-danger">Logout</a>
-  </div>
-</div>
 
 <!-- Boards Section -->
 <div class="container-fluid mt-3">
@@ -201,6 +171,7 @@
         <h5 class="modal-title">Add New User</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
         <div class="mb-3">
           <label for="username">Username</label>
@@ -215,6 +186,14 @@
         </div>
 
         <div class="mb-3">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" class="form-control" formControlName="confirmPassword" />
+          <div *ngIf="addUserForm.hasError('passwordMismatch') && addUserForm.get('confirmPassword')?.touched" class="text-danger small">
+            Passwords do not match
+          </div>
+        </div>
+
+        <div class="mb-3">
           <label for="role">Role</label>
           <select id="role" class="form-select" formControlName="role">
             <option value="USER">User</option>
@@ -222,10 +201,32 @@
             <option value="EMPLOYEE">Employee</option>
           </select>
         </div>
+
+        <div class="mb-3">
+          <label for="dateofbirth">Date of Birth</label>
+          <input type="date" id="dateofbirth" class="form-control" formControlName="dateofbirth" />
+          <div *ngIf="addUserForm.get('dateofbirth')?.invalid && addUserForm.get('dateofbirth')?.touched" class="text-danger small">
+            Date of Birth is required
+          </div>
+        </div>
+
+        <!-- reCAPTCHA -->
+        <div class="mb-3">
+          <re-captcha
+            (resolved)="onCaptchaResolved($event)"
+            siteKey="YOUR_RECAPTCHA_SITE_KEY">
+          </re-captcha>
+          <div *ngIf="!captchaVerified && captchaTouched" class="text-danger small">
+            Please verify that you are not a robot
+          </div>
+        </div>
       </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-success" [disabled]="addUserForm.invalid">Create User</button>
+        <button type="submit" class="btn btn-success" [disabled]="addUserForm.invalid || !captchaVerified">
+          Create User
+        </button>
       </div>
     </form>
   </div>

@@ -1,0 +1,128 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>User Profile</h4>
+    <button class="btn btn-outline-primary" (click)="openEditModal()">Edit Details</button>
+  </div>
+
+  <!-- Show user data -->
+  <div class="card shadow-sm p-4">
+    <div class="row">
+          <div class="col-md-4">
+          <img
+            [src]="userImageUrl"
+            (error)="userImageUrl = defaultImageUrl"
+            class="img-fluid rounded"
+            alt="Profile Image"
+          />
+        </div>
+
+
+      <div class="col-md-8">
+        <p><strong>Name:</strong> {{ userData?.firstName }} {{ userData?.lastName }}</p>
+        <p><strong>Email:</strong> {{ userData?.email }}</p>
+        <p><strong>Address:</strong> {{ userData?.address }}</p>
+        <p><strong>City:</strong> {{ userData?.city }}</p>
+        <p><strong>State:</strong> {{ userData?.state }}</p>
+        <p><strong>Country:</strong> {{ userData?.country }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Profile</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label>First Name</label>
+                <input type="text" class="form-control" formControlName="firstName" />
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label>Last Name</label>
+                <input type="text" class="form-control" formControlName="lastName" />
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label>Email</label>
+                <input type="email" class="form-control" formControlName="email" />
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label>Address</label>
+                <input type="text" class="form-control" formControlName="address" />
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label>City</label>
+                <input type="text" class="form-control" formControlName="city" />
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label>State</label>
+                <select class="form-select" formControlName="state">
+                  <option value="">Select State</option>
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                </select>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label>Country</label>
+                <select class="form-select" formControlName="country">
+                  <option value="">Select Country</option>
+                  <option value="India">India</option>
+                  <option value="USA">USA</option>
+                  <option value="UK">UK</option>
+                </select>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label>Password</label>
+                <input type="password" class="form-control" formControlName="password" autocomplete="new-password" />
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label>Confirm Password</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  formControlName="confirmPassword"
+                  autocomplete="new-password"
+                />
+                <div
+                  class="text-danger mt-1"
+                  *ngIf="profileForm.get('confirmPassword')?.touched && profileForm.errors?.['passwordMismatch']"
+                >
+                  Passwords do not match.
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="profileImage">Profile Image</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="profileImage"
+                  (change)="onFileSelected($event)"
+                  accept="image/*"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success" [disabled]="profileForm.invalid">Update</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

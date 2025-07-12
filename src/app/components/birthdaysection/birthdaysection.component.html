@@ -1,0 +1,24 @@
+
+<!-- Header Section -->
+
+<div class="container mt-4">
+  <h4 class="mb-3 text-primary fw-bold">🎉 Upcoming Birthdays</h4>
+  <div class="table-responsive shadow-sm rounded">
+    <table class="table table-striped table-bordered table-hover align-middle mb-0">
+      <thead class="table-primary text-white">
+      <tr>
+        <th scope="col">Username</th>
+        <th scope="col">Date of Birth</th>
+        <th scope="col">Age</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let user of upcomingBirthdays" [ngClass]="{'table-success': isBirthdayToday(user.dateofbirth)}">
+        <td class="fw-semibold">{{ user.username }}</td>
+        <td>{{ user.dateofbirth | date: 'MMMM d' }}</td>
+        <td class="text-center">{{ user.age }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
