@@ -11,11 +11,18 @@ import { Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { AuthServiceService } from "../../services/auth-service.service";
 import { HttpClient, HttpClientModule } from "@angular/common/http";
+import { RecaptchaModule } from "ng-recaptcha";
+import { YOUR_SITE_KEY } from "../DataCre/YOUR_SITE_KEY";
 
 @Component({
   selector: "app-login",
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    RecaptchaModule,
+  ],
   templateUrl: "./login.component.html",
   styleUrls: ["./login.component.css"],
 })
@@ -27,6 +34,7 @@ export class LoginComponent {
   showLoginModel = true;
   showRegisterModel = false;
   selectedFile: File | null = null;
+  public sc = YOUR_SITE_KEY;
 
   constructor(
     private fb: FormBuilder,
@@ -65,6 +73,13 @@ export class LoginComponent {
       { validators: this.passwordsMatchValidator }
     );
   }
+  captchaToken: string | null = null;
+  captchaError: boolean = false;
+
+  onCaptchaResolved(token: string | null): void {
+    this.captchaToken = token;
+    this.captchaError = !token; // Set error to true if token is null/empty
+  }
 
   showLogin() {
     this.showLoginModel = true;
@@ -78,7 +93,17 @@ export class LoginComponent {
 
   onSubmit(): void {
     this.submitted = true;
+
+    // Check form validity
     if (this.loginForm.invalid) return;
+
+    // Check if CAPTCHA is solved
+    if (!this.captchaToken) {
+      this.captchaError = true;
+      return;
+    } else {
+      this.captchaError = false;
+    }
 
     const { username, password } = this.loginForm.value;
 
@@ -97,12 +122,16 @@ export class LoginComponent {
       },
     });
   }
-
   onRegister(): void {
     if (this.userForm.invalid) {
       if (this.userForm.errors?.["passwordMismatch"]) {
         alert("Passwords do not match.");
       }
+      return;
+    }
+
+    if (!this.captchaToken) {
+      alert("Please complete the CAPTCHA.");
       return;
     }
 
@@ -121,6 +150,7 @@ export class LoginComponent {
       password: formValue.password,
       age: this.calculateAge(formValue.dob),
       role: "EMPLOYEE",
+      captchaToken: this.captchaToken, // ✅ Correct property name to match backend
     };
 
     const formData = new FormData();
@@ -137,11 +167,12 @@ export class LoginComponent {
       next: () => {
         this.userForm.reset();
         this.selectedFile = null;
-        this.showLogin();
+        this.captchaToken = null;
+        this.showLogin(); // ✅ Navigate or show login UI
       },
       error: (err) => {
-        alert("Registration failed");
-        console.error(err);
+        alert("Registration failed. Please try again.");
+        console.error("Registration error:", err);
       },
     });
   }

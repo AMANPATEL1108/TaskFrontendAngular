@@ -164,6 +164,19 @@
             </div>
           </div>
 
+          <!-- Captcha -->
+          <div class="mt-4 text-center">
+            <div class="border rounded p-3 bg-light d-inline-block">
+              <p class="mb-2">Please complete the CAPTCHA</p>
+                                <re-captcha
+                  [siteKey]="sc"
+                    (resolved)="onCaptchaResolved($event)">
+                  </re-captcha>
+
+              <div class="text-danger mt-1" *ngIf="captchaError">Please verify that you are not a robot.</div>
+            </div>
+          </div>
+
           <div class="text-end mt-4">
             <button type="submit" class="btn btn-success px-5 py-2 rounded-pill" [disabled]="userForm.invalid">
               Register
