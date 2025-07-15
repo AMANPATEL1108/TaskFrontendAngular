@@ -1,5 +1,6 @@
 import { AfterViewInit, Component } from "@angular/core";
 import { AuthServiceService } from "./services/auth-service.service";
+import { Router } from "@angular/router";
 declare var bootstrap: any;
 
 @Component({
@@ -9,11 +10,13 @@ declare var bootstrap: any;
 })
 export class AppComponent implements AfterViewInit {
   title = "projectA";
-  constructor(public authService: AuthServiceService) {}
+  constructor(public authService: AuthServiceService, public router: Router) {}
 
   showHeader(): boolean {
-    return this.authService.getUserId() !== null;
-  }
+    const isLoggedIn = this.authService.getUserId() !== null;
+    const isProfileOverview = this.router.url === "/profile-overview";
+    return isLoggedIn && !isProfileOverview;
+  }   
 
   ngAfterViewInit(): void {
     const dropdownElementList = [].slice.call(

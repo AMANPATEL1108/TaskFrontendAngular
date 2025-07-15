@@ -8,6 +8,7 @@ import { LeaveSectionComponent } from "./components/leavesection/leavesection.co
 import { BirthdaysectionComponent } from "./components/birthdaysection/birthdaysection.component";
 import { EditusersComponent } from "./components/editusers/editusers.component";
 import { ProfileComponent } from "./components/profile/profile.component";
+import { ProfileOverviewComponent } from "./components/profile-overview/profile-overview.component";
 
 const routes: Routes = [
   { path: "", redirectTo: "login", pathMatch: "full" },
@@ -39,6 +40,10 @@ const routes: Routes = [
   {
     path: "profile",
     component: ProfileComponent,
+  },
+  {
+    path: "profile-overview",
+    component: ProfileOverviewComponent,
   },
 ];
 

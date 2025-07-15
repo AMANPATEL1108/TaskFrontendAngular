@@ -97,14 +97,6 @@ export class LoginComponent {
     // Check form validity
     if (this.loginForm.invalid) return;
 
-    // Check if CAPTCHA is solved
-    if (!this.captchaToken) {
-      this.captchaError = true;
-      return;
-    } else {
-      this.captchaError = false;
-    }
-
     const { username, password } = this.loginForm.value;
 
     this.authService.login(username, password).subscribe({
@@ -122,6 +114,7 @@ export class LoginComponent {
       },
     });
   }
+
   onRegister(): void {
     if (this.userForm.invalid) {
       if (this.userForm.errors?.["passwordMismatch"]) {

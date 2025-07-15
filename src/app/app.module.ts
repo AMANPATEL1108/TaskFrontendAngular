@@ -21,6 +21,7 @@ import { EditusersComponent } from "./components/editusers/editusers.component";
 import { HeaderComponent } from "./components/header/header.component";
 import { RecaptchaModule } from "ng-recaptcha";
 import { ProfileComponent } from "./components/profile/profile.component";
+import { ProfileOverviewComponent } from './components/profile-overview/profile-overview.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { ProfileComponent } from "./components/profile/profile.component";
     EditusersComponent,
     HeaderComponent,
     ProfileComponent,
+    ProfileOverviewComponent,
   ],
   imports: [
     BrowserModule,

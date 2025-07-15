@@ -5,6 +5,9 @@
     <!-- Buttons -->
     <button routerLink="/home" class="btn btn-outline-primary me-2">Home</button>
 
+        <button routerLink="/profile-overview" class="btn btn-outline-primary me-2">Profile Overview</button>
+
+
     <button *ngIf="authService.isAdmin()" routerLink="/editusers" class="btn btn-outline-primary me-2">
       Edit Users
     </button>
