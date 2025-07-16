@@ -16,7 +16,7 @@ export class AppComponent implements AfterViewInit {
     const isLoggedIn = this.authService.getUserId() !== null;
     const isProfileOverview = this.router.url === "/profile-overview";
     return isLoggedIn && !isProfileOverview;
-  }   
+  }
 
   ngAfterViewInit(): void {
     const dropdownElementList = [].slice.call(
