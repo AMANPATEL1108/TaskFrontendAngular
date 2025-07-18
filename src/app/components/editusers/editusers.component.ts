@@ -55,7 +55,7 @@ export class EditusersComponent implements OnInit {
 
   loadAll() {
     this.http
-      .get<User[]>("http://localhost:8080/users/get-all-users")
+      .get<User[]>("http://localhost:8080/admin/get-all-users")
       .subscribe((users) => (this.users = users));
   }
 
@@ -108,7 +108,7 @@ export class EditusersComponent implements OnInit {
     if (!this.targetUser) return;
 
     this.http
-      .delete(`http://localhost:8080/users/deleteById/${this.targetUser.id}`, {
+      .delete(`http://localhost:8080/admin/deleteById/${this.targetUser.id}`, {
         responseType: "text" as "json",
       })
       .subscribe({

@@ -5,7 +5,7 @@ import {
   Validators,
   AbstractControl,
 } from "@angular/forms";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 
 declare var bootstrap: any;
 
@@ -47,6 +47,13 @@ export class ProfileComponent implements OnInit {
     this.loadUserData();
   }
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem("authToken");
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+  }
+
   passwordsMatch(group: AbstractControl): { [key: string]: boolean } | null {
     const pass = group.get("password")?.value;
     const confirm = group.get("confirmPassword")?.value;
@@ -54,14 +61,14 @@ export class ProfileComponent implements OnInit {
   }
 
   loadUserData(): void {
-    const userId = localStorage.getItem("userId"); // get from localStorage
-    if (userId) {
+    if (this.userId) {
       this.http
-        .get<any>(`http://localhost:8080/users/findById/${userId}`)
+        .get<any>(`http://localhost:8080/users/findById/${this.userId}`, {
+          headers: this.getAuthHeaders(),
+        })
         .subscribe((data) => {
           this.userData = data;
 
-          // Patch form values
           this.profileForm.patchValue({
             firstName: data.firstName,
             lastName: data.lastName,
@@ -72,7 +79,6 @@ export class ProfileComponent implements OnInit {
             country: data.country,
           });
 
-          // Handle image URL
           this.userImageUrl = data.imageUrl
             ? `http://localhost:8080${data.imageUrl}`
             : this.defaultImageUrl;
@@ -129,7 +135,9 @@ export class ProfileComponent implements OnInit {
     }
 
     this.http
-      .put(`http://localhost:8080/users/updateById/${this.userId}`, formData)
+      .put(`http://localhost:8080/users/updateById/${this.userId}`, formData, {
+        headers: this.getAuthHeaders(),
+      })
       .subscribe({
         next: () => {
           alert("✅ Profile updated successfully!");

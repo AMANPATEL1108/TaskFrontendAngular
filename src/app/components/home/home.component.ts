@@ -102,7 +102,7 @@ export class HomeComponent implements OnInit {
 
   loadUsersAndMenus(): void {
     this.http
-      .get<User[]>("http://localhost:8080/users/get-all-users")
+      .get<User[]>("http://localhost:8080/admin/get-all-users")
       .subscribe({
         next: (users) => {
           this.users = users;
@@ -130,7 +130,7 @@ export class HomeComponent implements OnInit {
               id: task.id ?? task._id ?? 0,
               assignedTo: user ? { username: user.username } : "Unassigned",
               status: task.status || "Not Started",
-              userId: userId, // ✅ This is now number or undefined
+              userId: userId,
             };
           }),
         }));
@@ -147,12 +147,12 @@ export class HomeComponent implements OnInit {
 
     const { confirmPassword, ...newUser } = this.addUserForm.value;
 
-    this.http.post("http://localhost:8080/users/create", newUser).subscribe({
-      next: (res) => {
+    this.http.post("http://localhost:8080/admin/create", newUser).subscribe({
+      next: () => {
         const modalEl = document.getElementById("addUserModal");
         if (modalEl) bootstrap.Modal.getInstance(modalEl)?.hide();
-        this.addUserForm.reset({ role: "USER" }); // Reset form with default role
-        this.loadUsersAndMenus(); // Refresh list
+        this.addUserForm.reset({ role: "USER" });
+        this.loadUsersAndMenus();
       },
       error: (err) => {
         console.error("Error creating user:", err);
@@ -163,7 +163,6 @@ export class HomeComponent implements OnInit {
 
   openAddTaskModal(menu: TaskMenu): void {
     this.currentColumn = menu;
-
     this.taskForm.reset({
       status: menu.name,
       priority: "Medium",
@@ -173,7 +172,6 @@ export class HomeComponent implements OnInit {
       endDate: "",
       imageUrl: "",
     });
-
     const modalEl = document.getElementById("taskModal");
     if (modalEl) new bootstrap.Modal(modalEl).show();
   }
@@ -229,7 +227,6 @@ export class HomeComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       this.taskForm.patchValue({ imageFile: file });
-
       const reader = new FileReader();
       reader.onload = () => {
         this.taskForm.patchValue({ imageUrl: reader.result });
@@ -254,8 +251,8 @@ export class HomeComponent implements OnInit {
           id: newList.id ?? newList._id ?? 0,
           tasks: (newList.tasks ?? []).map((task) => ({
             ...task,
-            taskMenuId: newList.id ?? 0, // Ensure taskMenuId is added to each task
-            id: task.id ?? task._id ?? 0, // Ensure task id is valid
+            taskMenuId: newList.id ?? 0,
+            id: task.id ?? task._id ?? 0,
             assignedTo: task.userId
               ? {
                   username:
@@ -263,18 +260,15 @@ export class HomeComponent implements OnInit {
                     "Unknown",
                 }
               : { username: "Unknown" },
-            status: task.status || "Not Started", // Set default status if missing
+            status: task.status || "Not Started",
           })),
         };
 
-        // Push the new task menu to the list of task menus
         this.taskMenus.push(normalizedList);
 
-        // Hide modal after adding
         const modalEl = document.getElementById("addListModal");
         if (modalEl) bootstrap.Modal.getInstance(modalEl)?.hide();
 
-        // Reset the form
         this.addListForm.reset();
       },
       error: (err) => {
@@ -315,7 +309,6 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    // Only move in the UI if the drop was within the same container
     if (event.previousContainer === event.container) {
       moveItemInArray(
         targetMenu.tasks,
@@ -325,11 +318,13 @@ export class HomeComponent implements OnInit {
     }
 
     this.http
-      .put(`http://localhost:8080/tasks/move/${movedTask.id}`, { newMenuId })
+      .put(`http://localhost:8080/user/tasks/move/${movedTask.id}`, {
+        newMenuId,
+      })
       .subscribe({
         next: (response) => {
           console.log("Task moved successfully:", response);
-          this.loadTaskMenus(); // Refresh menus and tasks
+          this.loadTaskMenus();
         },
         error: (error) => {
           console.error("Error updating task menu:", error);
@@ -341,27 +336,24 @@ export class HomeComponent implements OnInit {
   getConnectedListIds(currentMenuId: number): string[] {
     return this.taskMenus
       .filter((m) => m.id !== currentMenuId)
-      .map((m) => "menu-" + m.id); // 🔧 Matches the [id] in template
+      .map((m) => "menu-" + m.id);
   }
 
   getAssignedToName(
     assignedTo: string | { username: string } | null | undefined
   ): string {
     if (!assignedTo) return "Unassigned";
-
     if (typeof assignedTo === "object" && "username" in assignedTo) {
       return assignedTo.username;
     }
-
     if (typeof assignedTo === "string") {
       const userId = Number(assignedTo);
       if (!isNaN(userId)) {
         const user = this.users.find((u) => u.id === userId);
         return user ? user.username : "Unassigned";
       }
-      return assignedTo; // fallback
+      return assignedTo;
     }
-
     return "Unassigned";
   }
 

@@ -31,14 +31,16 @@ export class DocumentDashboardComponent implements OnInit {
   }
 
   loadAll(): void {
-    this.http.get<any[]>("http://localhost:8080/person/get-all").subscribe({
-      next: (data) => {
-        this.documents = data;
-      },
-      error: () => {
-        this.toastr.error("Failed to load documents", "Error");
-      }
-    });
+    this.http
+      .get<any[]>("http://localhost:8080/admin/get-all-persons")
+      .subscribe({
+        next: (data) => {
+          this.documents = data;
+        },
+        error: () => {
+          this.toastr.error("Failed to load documents", "Error");
+        },
+      });
   }
 
   openAdd(): void {
@@ -46,9 +48,7 @@ export class DocumentDashboardComponent implements OnInit {
     this.newDocument = {};
     this.selectedFile = null;
     this.fileTouched = false;
-    new bootstrap.Modal(
-      document.getElementById("addDocumentModal")
-    ).show();
+    new bootstrap.Modal(document.getElementById("addDocumentModal")).show();
   }
 
   openEdit(doc: any): void {
@@ -56,9 +56,7 @@ export class DocumentDashboardComponent implements OnInit {
     this.newDocument = { ...doc };
     this.selectedFile = null;
     this.fileTouched = false;
-    new bootstrap.Modal(
-      document.getElementById("addDocumentModal")
-    ).show();
+    new bootstrap.Modal(document.getElementById("addDocumentModal")).show();
   }
 
   onFileChange(event: any): void {
@@ -75,34 +73,42 @@ export class DocumentDashboardComponent implements OnInit {
 
   submitDocument(): void {
     const url = this.editMode
-      ? `http://localhost:8080/person/updateById/${this.newDocument.id}`
-      : `http://localhost:8080/person/create`;
+      ? `http://localhost:8080/user/person/updateById/${this.newDocument.id}`
+      : `http://localhost:8080/admin/create-person`;
 
     const form = new FormData();
-    form.append("person", new Blob([JSON.stringify(this.newDocument)], { type: "application/json" }));
+    form.append(
+      "person",
+      new Blob([JSON.stringify(this.newDocument)], { type: "application/json" })
+    );
 
     // If a file is selected, append it to the form
     if (this.selectedFile) {
       form.append("file", this.selectedFile);
     }
 
-    const request$ = this.editMode ? this.http.put(url, form) : this.http.post(url, form);
+    const request$ = this.editMode
+      ? this.http.put(url, form)
+      : this.http.post(url, form);
 
     request$.subscribe({
       next: () => {
         this.toastr.success(
-          this.editMode ? "Document updated successfully" : "Document added successfully",
+          this.editMode
+            ? "Document updated successfully"
+            : "Document added successfully",
           "Success"
         );
         this.loadAll();
-        bootstrap.Modal.getInstance(document.getElementById("addDocumentModal"))?.hide();
+        bootstrap.Modal.getInstance(
+          document.getElementById("addDocumentModal")
+        )?.hide();
       },
       error: () => {
         this.toastr.error("Failed to save document", "Error");
-      }
+      },
     });
   }
-
 
   confirmDelete(doc: any): void {
     this.deleteTarget = doc;
@@ -110,17 +116,19 @@ export class DocumentDashboardComponent implements OnInit {
   }
 
   deleteDocument(): void {
-    this.http.delete(`http://localhost:8080/person/deleteByID/${this.deleteTarget.id}`).subscribe({
-      next: () => {
-        this.toastr.success("Document deleted successfully", "Success");
-        this.loadAll();
-        this.deleteModal.hide();
-      },
-      error: () => {
-        this.toastr.error("Failed to delete document", "Error");
-      }
-    });
+    this.http
+      .delete(
+        `http://localhost:8080/admin/person-deleteByID/${this.deleteTarget.id}`
+      )
+      .subscribe({
+        next: () => {
+          this.toastr.success("Document deleted successfully", "Success");
+          this.loadAll();
+          this.deleteModal.hide();
+        },
+        error: () => {
+          this.toastr.error("Failed to delete document", "Error");
+        },
+      });
   }
 }
-
-

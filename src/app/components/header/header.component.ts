@@ -15,7 +15,7 @@ export class HeaderComponent {
   userId!: number;
   userData: any;
   userImageUrl: string = "";
-  defaultImageUrl: string = "assets/images/default-profile.png";
+  defaultImageUrl: string = "assets/default.jpg";
   constructor(
     public authService: AuthServiceService,
     public router: Router,
@@ -36,7 +36,7 @@ export class HeaderComponent {
 
     if (userId) {
       this.http
-        .get<any>(`http://localhost:8080/users/findById/${userId}`)
+        .get<any>(`http://localhost:8080/admin/findById/${userId}`)
         .subscribe({
           next: (data) => {
             this.userData = data;

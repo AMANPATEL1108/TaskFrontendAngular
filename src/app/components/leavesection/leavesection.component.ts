@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
-import { AuthServiceService } from '../../services/auth-service.service';
-import { Leave } from './leave.model';
-import { LeaveService } from '../../services/leave.service';
+import { Component, OnInit } from "@angular/core";
+import { ToastrService } from "ngx-toastr";
+import { AuthServiceService } from "../../services/auth-service.service";
+import { Leave } from "./leave.model";
+import { LeaveService } from "../../services/leave.service";
 
 @Component({
-  selector: 'app-leave-section',
-  templateUrl: './leavesection.component.html',
+  selector: "app-leave-section",
+  templateUrl: "./leavesection.component.html",
 })
 export class LeaveSectionComponent implements OnInit {
   declineReasonModalVisible = false;
@@ -15,17 +15,16 @@ export class LeaveSectionComponent implements OnInit {
   deleteTarget: Leave | null = null;
   currentEdit: Leave | null = null;
   declineTarget: any;
-  declineReason: string = '';
+  declineReason: string = "";
   delineReasonAdmin: boolean = false;
 
   formData = {
-    subject: '',
-    description: '',
-    leaveDate: '',
-    dayType: 'Full Day' as 'Full Day' | 'Half Day',
-    halfType: 'First Half' as 'First Half' | 'Second Half',
+    subject: "",
+    description: "",
+    leaveDate: "",
+    dayType: "Full Day" as "Full Day" | "Half Day",
+    halfType: "First Half" as "First Half" | "Second Half",
   };
-
 
   userId: number | null = null;
 
@@ -47,7 +46,7 @@ export class LeaveSectionComponent implements OnInit {
         leaveDate: l.leavedate,
         dayType: l.daytype,
         statusofleave: l.statusofleave,
-        description: l.description || '',
+        description: l.description || "",
         user: l.user,
         halfType: l.halfType,
         reasonfordeclineleave: l.reasonfordeclineleave,
@@ -63,13 +62,12 @@ export class LeaveSectionComponent implements OnInit {
     this.resetForm(); // Only reset if you're adding
     this.currentEdit = null;
     this.showFormModal = true;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
   }
-
 
   closeFormModal(): void {
     this.showFormModal = false;
-    document.body.style.overflow = 'auto';
+    document.body.style.overflow = "auto";
   }
 
   editLeave(leave: Leave): void {
@@ -77,23 +75,20 @@ export class LeaveSectionComponent implements OnInit {
 
     // Convert date to yyyy-MM-dd format
     const formattedDate = leave.leavedate
-      ? new Date(leave.leavedate).toISOString().split('T')[0]
-      : '';
+      ? new Date(leave.leavedate).toISOString().split("T")[0]
+      : "";
 
     this.formData = {
-      subject: leave.subject || '',
-      description: leave.description || '',
+      subject: leave.subject || "",
+      description: leave.description || "",
       leaveDate: formattedDate,
-      dayType: leave.daytype as 'Full Day' | 'Half Day',
-      halfType: leave.halfType || 'First Half',
+      dayType: leave.daytype as "Full Day" | "Half Day",
+      halfType: leave.halfType || "First Half",
     };
 
     this.showFormModal = true;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
   }
-
-
-
 
   deleteLeave(id: number): void {
     // Show confirmation modal before deletion
@@ -107,7 +102,7 @@ export class LeaveSectionComponent implements OnInit {
   confirmDelete(): void {
     if (this.deleteTarget) {
       this.leaveService.deleteLeaveById(this.deleteTarget.id).subscribe(() => {
-        this.toastr.info('Leave deleted');
+        this.toastr.info("Leave deleted");
         this.loadLeaves();
         this.deleteTarget = null;
       });
@@ -125,7 +120,7 @@ export class LeaveSectionComponent implements OnInit {
   addLeave(): void {
     const userId = this.authService.getUserId();
     if (!userId) {
-      this.toastr.error('User ID not found. Please log in again.');
+      this.toastr.error("User ID not found. Please log in again.");
       return;
     }
 
@@ -134,21 +129,24 @@ export class LeaveSectionComponent implements OnInit {
       description: this.formData.description,
       leavedate: this.formData.leaveDate,
       daytype: this.formData.dayType,
-      statusofleave: 'Pending',
-      reasonfordeclineleave: '',
+      statusofleave: "Pending",
+      reasonfordeclineleave: "",
       user: { id: userId },
-      halfType: this.formData.dayType === 'Half Day' ? this.formData.halfType : undefined,
+      halfType:
+        this.formData.dayType === "Half Day"
+          ? this.formData.halfType
+          : undefined,
     };
 
     this.leaveService.createLeave(payload).subscribe({
       next: () => {
-        this.toastr.success('Leave submitted successfully');
+        this.toastr.success("Leave submitted successfully");
         this.loadLeaves();
         this.resetForm();
         this.closeFormModal();
       },
       error: () => {
-        this.toastr.error('Failed to submit leave');
+        this.toastr.error("Failed to submit leave");
       },
     });
   }
@@ -162,12 +160,15 @@ export class LeaveSectionComponent implements OnInit {
       description: this.formData.description,
       leavedate: this.formData.leaveDate,
       daytype: this.formData.dayType,
-      halfType: this.formData.dayType === 'Half Day' ? this.formData.halfType : undefined,
+      halfType:
+        this.formData.dayType === "Half Day"
+          ? this.formData.halfType
+          : undefined,
       updateDate: new Date().toISOString(),
     };
 
     this.leaveService.updateLeaveById(updated.id, updated).subscribe(() => {
-      this.toastr.success('Leave updated');
+      this.toastr.success("Leave updated");
       this.loadLeaves();
       this.currentEdit = null;
       this.closeFormModal();
@@ -175,21 +176,23 @@ export class LeaveSectionComponent implements OnInit {
   }
 
   acceptLeave(leave: Leave): void {
-    if (leave.statusofleave === 'Pending') {
+    if (leave.statusofleave === "Pending") {
       const updatedLeave = {
         ...leave,
-        statusofleave: 'Accepted',
+        statusofleave: "Accepted",
         updateDate: new Date().toISOString(),
       };
-      this.leaveService.updateLeaveById(leave.id, updatedLeave).subscribe(() => {
-        this.toastr.success('Leave accepted');
-        this.loadLeaves();
-      });
+      this.leaveService
+        .updateLeaveById(leave.id, updatedLeave)
+        .subscribe(() => {
+          this.toastr.success("Leave accepted");
+          this.loadLeaves();
+        });
     }
   }
 
   openDeclineReasonModal(leave: Leave) {
-    this.declineReason = leave.reasonfordeclineleave || '';
+    this.declineReason = leave.reasonfordeclineleave || "";
     this.declineReasonModalVisible = true;
   }
 
@@ -200,7 +203,7 @@ export class LeaveSectionComponent implements OnInit {
   showDeclineReasonAdminModal(leave: Leave): void {
     this.declineTarget = leave;
     this.delineReasonAdmin = true;
-    this.declineReason = '';
+    this.declineReason = "";
   }
 
   closeDeclineReasonModal2() {
@@ -209,44 +212,47 @@ export class LeaveSectionComponent implements OnInit {
 
   confirmDecline() {
     if (this.declineTarget && this.declineReason.trim()) {
-      this.declineTarget.statusofleave = 'Declined';
+      this.declineTarget.statusofleave = "Declined";
       this.declineTarget.reasonfordeclineleave = this.declineReason;
       this.declineTarget.updateDate = new Date().toISOString();
 
-      this.leaveService.updateLeaveById(this.declineTarget.id, this.declineTarget).subscribe(
-        () => {
-          this.toastr.success('Leave request declined successfully.');
-          this.loadLeaves();
-          this.closeDeclineReasonModal2();
-        },
-        (error) => {
-          this.toastr.error('Failed to decline leave. Please try again.');
-        }
-      );
+      this.leaveService
+        .updateLeaveById(this.declineTarget.id, this.declineTarget)
+        .subscribe(
+          () => {
+            this.toastr.success("Leave request declined successfully.");
+            this.loadLeaves();
+            this.closeDeclineReasonModal2();
+          },
+          (error) => {
+            this.toastr.error("Failed to decline leave. Please try again.");
+          }
+        );
     } else {
-      this.toastr.error('Please provide a reason for the decline.');
+      this.toastr.error("Please provide a reason for the decline.");
     }
   }
 
   cancelDecline() {
     this.declineTarget = null;
-    this.declineReason = '';
+    this.declineReason = "";
   }
 
   resetForm(): void {
     this.formData = {
-      subject: '',
-      description: '',
-      leaveDate: '',
-      dayType: 'Full Day',
-      halfType: 'First Half',
+      subject: "",
+      description: "",
+      leaveDate: "",
+      dayType: "Full Day",
+      halfType: "First Half",
     };
     this.currentEdit = null;
   }
 
   // Helper method to disable buttons if status is Accepted or Declined
   isActionDisabled(leave: Leave): boolean {
-    return leave.statusofleave === 'Accepted' || leave.statusofleave === 'Declined';
+    return (
+      leave.statusofleave === "Accepted" || leave.statusofleave === "Declined"
+    );
   }
-
 }

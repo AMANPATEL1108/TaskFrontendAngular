@@ -2,7 +2,7 @@
 <div class="container my-4">
   <div class="d-flex justify-content-between align-items-center">
     <h2>Leave Requests</h2>
-    <button *ngIf="authService.isEmployye()" class="btn btn-primary" (click)="openFormModal()">Add Leave</button>
+    <button *ngIf="authService.isEmployee()" class="btn btn-primary" (click)="openFormModal()">Add Leave</button>
   </div>
 
   <!-- Form Modal -->
@@ -161,7 +161,7 @@
   </span>
 
         <!-- Employee actions -->
-        <ng-container *ngIf="authService.isEmployye() && !isActionDisabled(leave)">
+        <ng-container *ngIf="authService.isEmployee() && !isActionDisabled(leave)">
           <button
             class="btn btn-sm btn-outline-primary me-1"
             (click)="editLeave(leave)"

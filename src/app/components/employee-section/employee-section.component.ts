@@ -45,7 +45,7 @@ export class EmployeeSectionComponent {
     const fileName = fullPath.replace(/^.*[\\\/]/, "");
 
     // ✅ Correct backend view URL
-    doc.pdfUrlApi = `http://localhost:8080/document/view?filename=${encodeURIComponent(
+    doc.pdfUrlApi = `http://localhost:8080/user/document/view?filename=${encodeURIComponent(
       fileName
     )}`;
 
