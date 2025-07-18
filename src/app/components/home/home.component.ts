@@ -318,7 +318,7 @@ export class HomeComponent implements OnInit {
     }
 
     this.http
-      .put(`http://localhost:8080/user/tasks/move/${movedTask.id}`, {
+      .put(`http://localhost:8080/admin/move/${movedTask.id}`, {
         newMenuId,
       })
       .subscribe({

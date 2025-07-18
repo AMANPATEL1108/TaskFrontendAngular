@@ -22,32 +22,46 @@ export interface TaskMenu {
   _id?: number;
   name: string;
   tasks: Task[];
+  datacon: any;
 }
 
 @Injectable({ providedIn: "root" })
 export class TaskMenuService {
-  private baseUrl = "http://localhost:8080/user/taskmenu";
+  private baseUrl = "http://localhost:8080";
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    console.log("This is all data menu:", this.getAll);
+  }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem("authToken");
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
+    console.log("Token Retrieved:", token);
+
+    let headers = new HttpHeaders();
+
+    if (token) {
+      headers = headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    return headers;
   }
 
   getAll(): Observable<TaskMenu[]> {
-    return this.http.get<TaskMenu[]>(`${this.baseUrl}/get-all-taskmenu`, {
+    console.log("Token Finded", this.getAuthHeaders());
+    return this.http.get<TaskMenu[]>(`${this.baseUrl}/admin/get-all-taskmenu`, {
       headers: this.getAuthHeaders(),
     });
   }
 
   addTaskToMenu(formData: FormData): Observable<Task> {
+    console.log("Data from Atsk create", formData);
     return this.http.post<Task>(
       "http://localhost:8080/admin/create-task",
       formData,
-      { headers: this.getAuthHeaders() }
+      {
+        headers: this.getAuthHeaders(),
+        withCredentials: true, // ✅ Optional, if you're also using cookies
+      }
     );
   }
 
