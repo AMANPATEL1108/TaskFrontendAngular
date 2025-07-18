@@ -17,7 +17,7 @@ export class BirthdaysectionComponent {
 
   ngOnInit(): void {
     this.http
-      .get<any[]>("http://localhost:8080/user/upcoming-birthdays")
+      .get<any[]>("http://localhost:8080/basic/upcoming-birthdays")
       .subscribe({
         next: (data) => {
           this.upcomingBirthdays = data;

@@ -63,7 +63,7 @@ export class ProfileComponent implements OnInit {
   loadUserData(): void {
     if (this.userId) {
       this.http
-        .get<any>(`http://localhost:8080/users/findById/${this.userId}`, {
+        .get<any>(`http://localhost:8080/admin/findById/${this.userId}`, {
           headers: this.getAuthHeaders(),
         })
         .subscribe((data) => {
@@ -135,9 +135,13 @@ export class ProfileComponent implements OnInit {
     }
 
     this.http
-      .put(`http://localhost:8080/users/updateById/${this.userId}`, formData, {
-        headers: this.getAuthHeaders(),
-      })
+      .put(
+        `http://localhost:8080/admin/updateById-user/${this.userId}`,
+        formData,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      )
       .subscribe({
         next: () => {
           alert("✅ Profile updated successfully!");

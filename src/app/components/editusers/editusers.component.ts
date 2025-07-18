@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { AuthServiceService } from "../../services/auth-service.service";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { ToastrService } from "ngx-toastr";
 
 interface User {
@@ -83,7 +83,7 @@ export class EditusersComponent implements OnInit {
     };
 
     this.http
-      .put(`http://localhost:8080/users/updateById/${updated.id}`, updated, {
+      .put(`http://localhost:8080/admin/updateById/${updated.id}`, updated, {
         responseType: "text" as "json",
       })
       .subscribe({
@@ -106,9 +106,17 @@ export class EditusersComponent implements OnInit {
 
   confirmDelete() {
     if (!this.targetUser) return;
+    console.log("Deleting id is", this.targetUser.id);
+
+    const token = localStorage.getItem("authToken");
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
 
     this.http
       .delete(`http://localhost:8080/admin/deleteById/${this.targetUser.id}`, {
+        headers: headers,
         responseType: "text" as "json",
       })
       .subscribe({

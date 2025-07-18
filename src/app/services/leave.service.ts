@@ -27,7 +27,7 @@ export class LeaveService {
 
   getAllLeaves(): Observable<Leave[]> {
     return this.http
-      .get<Leave[]>(`${this.baseUrl}/get-all-leaves`, {
+      .get<Leave[]>(`http://localhost:8080/admin/get-all-leaves`, {
         headers: this.getAuthHeaders(),
       })
       .pipe(

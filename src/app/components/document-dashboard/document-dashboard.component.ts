@@ -73,7 +73,7 @@ export class DocumentDashboardComponent implements OnInit {
 
   submitDocument(): void {
     const url = this.editMode
-      ? `http://localhost:8080/user/person/updateById/${this.newDocument.id}`
+      ? `http://localhost:8080/admin/updateById-person/${this.newDocument.id}`
       : `http://localhost:8080/admin/create-person`;
 
     const form = new FormData();
