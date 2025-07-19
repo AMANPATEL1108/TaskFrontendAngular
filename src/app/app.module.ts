@@ -21,7 +21,9 @@ import { EditusersComponent } from "./components/editusers/editusers.component";
 import { HeaderComponent } from "./components/header/header.component";
 import { RecaptchaModule } from "ng-recaptcha";
 import { ProfileComponent } from "./components/profile/profile.component";
-import { ProfileOverviewComponent } from './components/profile-overview/profile-overview.component';
+import { ProfileOverviewComponent } from "./components/profile-overview/profile-overview.component";
+import { AccessDeniedComponent } from "./access-denied/access-denied.component";
+import { ErrorInterceptor } from "./interceptors/error.service";
 
 @NgModule({
   declarations: [
@@ -36,6 +38,7 @@ import { ProfileOverviewComponent } from './components/profile-overview/profile-
     HeaderComponent,
     ProfileComponent,
     ProfileOverviewComponent,
+    AccessDeniedComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,6 +65,7 @@ import { ProfileOverviewComponent } from './components/profile-overview/profile-
       useClass: AuthInterceptor,
       multi: true,
     },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

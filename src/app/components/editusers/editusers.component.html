@@ -1,3 +1,7 @@
+
+<button class="btn btn-primary btn-sm" (click)="openRegisterModel()">Register</button>
+
+
 <table class="table table-bordered">
   <thead class="table-light">
     <tr>
@@ -84,3 +88,149 @@
     </div>
   </div>
 </div>
+
+
+   <div *ngIf="showRegisterModel" class="modal fade show d-block" tabindex="-1"
+     style="background-color: rgba(0,0,0,0.5); position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow-y: auto;">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content animate-slide-in-right p-3">
+      <div class="modal-header">
+        <h5 class="modal-title text-success">Register New User</h5>
+        <button type="button" class="btn-close" (click)="closeRegisterModel()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="userForm" (ngSubmit)="onRegister()">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" formControlName="firstName" id="firstName" placeholder="First Name" />
+                <label for="firstName">First Name</label>
+                <div class="text-danger mt-1" *ngIf="userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched">
+                  First Name is required.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" formControlName="lastName" id="lastName" placeholder="Last Name" />
+                <label for="lastName">Last Name</label>
+                <div class="text-danger mt-1" *ngIf="userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched">
+                  Last Name is required.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="email" class="form-control" formControlName="email" id="email" placeholder="Email" />
+                <label for="email">Email</label>
+                <div class="text-danger mt-1" *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+                  Valid email is required.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" formControlName="address" id="address" placeholder="Address" />
+                <label for="address">Address</label>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-floating">
+                <input type="text" class="form-control" formControlName="city" id="city" placeholder="City" />
+                <label for="city">City</label>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-floating">
+                <select class="form-select" formControlName="state" id="state">
+                  <option value="">Select State</option>
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                </select>
+                <label for="state">State</label>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-floating">
+                <select class="form-select" formControlName="country" id="country">
+                  <option value="">Select Country</option>
+                  <option value="India">India</option>
+                  <option value="USA">USA</option>
+                  <option value="UK">UK</option>
+                </select>
+                <label for="country">Country</label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="date" class="form-control" formControlName="dob" id="dob" placeholder="Date of Birth" />
+                <label for="dob">Date of Birth</label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" class="form-control" formControlName="userName" id="regUsername" placeholder="Username" />
+                <label for="regUsername">Username</label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="password" class="form-control" formControlName="password" id="regPassword" placeholder="Password" />
+                <label for="regPassword">Password</label>
+                <div class="text-danger mt-1" *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+                  Password must meet criteria.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="password" class="form-control" formControlName="confirmPassword" id="confirmPassword"
+                  placeholder="Confirm Password" />
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="text-danger mt-1"
+                  *ngIf="userForm.get('confirmPassword')?.touched && userForm.errors?.['passwordMismatch']">
+                  Passwords do not match.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Profile Image</label>
+              <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*" />
+            </div>
+          </div>
+
+          <!-- Captcha -->
+           <!--<div class="mt-4 text-center">
+            <div class="border rounded p-3 bg-light d-inline-block">
+              <p class="mb-2">Please complete the CAPTCHA</p>
+                                <re-captcha
+                  [siteKey]="sc"
+                    (resolved)="onCaptchaResolved($event)">
+                  </re-captcha> 
+
+              <div class="text-danger mt-1" *ngIf="captchaError">Please verify that you are not a robot.</div>+
+            </div>
+          </div> -->
+
+          <div class="text-end mt-4">
+            <button type="submit" class="btn btn-success px-5 py-2 rounded-pill" [disabled]="userForm.invalid">
+              Register
+            </button>
+          </div>
+        </form>
+        </div>
+        </div>
+      </div>
+    </div>  

@@ -102,7 +102,7 @@ export class HomeComponent implements OnInit {
 
   loadUsersAndMenus(): void {
     this.http
-      .get<User[]>("http://localhost:8080/admin/get-all-users")
+      .get<User[]>("http://localhost:8080/basic/get-all-users")
       .subscribe({
         next: (users) => {
           this.users = users;
@@ -318,7 +318,7 @@ export class HomeComponent implements OnInit {
     }
 
     this.http
-      .put(`http://localhost:8080/admin/move/${movedTask.id}`, {
+      .put(`http://localhost:8080/basic/move/${movedTask.id}`, {
         newMenuId,
       })
       .subscribe({

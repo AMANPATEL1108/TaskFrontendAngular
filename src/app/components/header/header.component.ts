@@ -36,7 +36,7 @@ export class HeaderComponent {
 
     if (userId) {
       this.http
-        .get<any>(`http://localhost:8080/admin/findById/${userId}`)
+        .get<any>(`http://localhost:8080/basic/findById/${userId}`)
         .subscribe({
           next: (data) => {
             this.userData = data;

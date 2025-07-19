@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable, map } from "rxjs";
+import { jwtDecode } from "jwt-decode";
 
 interface LoginResponse {
   token: string;
@@ -102,5 +103,25 @@ export class AuthServiceService {
           },
         });
     }
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  getDecodedToken(): any | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      return jwtDecode(token);
+    } catch (e) {
+      console.error("Invalid token", e);
+      return null;
+    }
+  }
+
+  hasRole(role: string): boolean {
+    const decoded = this.getDecodedToken();
+    return decoded?.role === role || this.getRole() === role;
   }
 }

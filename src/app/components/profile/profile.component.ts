@@ -63,7 +63,7 @@ export class ProfileComponent implements OnInit {
   loadUserData(): void {
     if (this.userId) {
       this.http
-        .get<any>(`http://localhost:8080/admin/findById/${this.userId}`, {
+        .get<any>(`http://localhost:8080/basic/findById/${this.userId}`, {
           headers: this.getAuthHeaders(),
         })
         .subscribe((data) => {
@@ -80,7 +80,7 @@ export class ProfileComponent implements OnInit {
           });
 
           this.userImageUrl = data.imageUrl
-            ? `http://localhost:8080${data.imageUrl}`
+            ? `http://localhost:8080/normal/${data.imageUrl}`
             : this.defaultImageUrl;
 
           console.log("User image URL:", this.userImageUrl);
@@ -135,13 +135,9 @@ export class ProfileComponent implements OnInit {
     }
 
     this.http
-      .put(
-        `http://localhost:8080/admin/updateById-user/${this.userId}`,
-        formData,
-        {
-          headers: this.getAuthHeaders(),
-        }
-      )
+      .put(`http://localhost:8080/basic/updateById/${this.userId}`, formData, {
+        headers: this.getAuthHeaders(),
+      })
       .subscribe({
         next: () => {
           alert("✅ Profile updated successfully!");

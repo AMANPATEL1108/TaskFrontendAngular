@@ -20,7 +20,7 @@
       Leave Section
     </button>
 
-    <button *ngIf="authService.isEmployee()" routerLink="/document" class="btn btn-outline-primary me-2">
+    <button *ngIf="authService.isUser()" routerLink="/document" class="btn btn-outline-primary me-2">
       User Documents
     </button>
 

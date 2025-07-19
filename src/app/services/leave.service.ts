@@ -19,7 +19,7 @@ export class LeaveService {
   }
 
   createLeave(leave: any): Observable<string> {
-    return this.http.post(`${this.baseUrl}/createleave`, leave, {
+    return this.http.post(`http://localhost:8080/user/createleave`, leave, {
       headers: this.getAuthHeaders(),
       responseType: "text",
     });
@@ -27,7 +27,7 @@ export class LeaveService {
 
   getAllLeaves(): Observable<Leave[]> {
     return this.http
-      .get<Leave[]>(`http://localhost:8080/admin/get-all-leaves`, {
+      .get<Leave[]>(`http://localhost:8080/basic/get-all-leaves`, {
         headers: this.getAuthHeaders(),
       })
       .pipe(
@@ -38,22 +38,32 @@ export class LeaveService {
   }
 
   getLeaveById(id: number): Observable<Leave> {
-    return this.http.get<Leave>(`${this.baseUrl}/get-leave-ById/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http.get<Leave>(
+      `http://localhost:8080/user/get-leave-ById/${id}`,
+      {
+        headers: this.getAuthHeaders(),
+      }
+    );
   }
 
   updateLeaveById(id: number, leave: Leave): Observable<string> {
-    return this.http.put(`${this.baseUrl}/updateById/${id}`, leave, {
-      headers: this.getAuthHeaders(),
-      responseType: "text",
-    });
+    return this.http.put(
+      `http://localhost:8080/basic/updateById-leave/${id}`,
+      leave,
+      {
+        headers: this.getAuthHeaders(),
+        responseType: "text",
+      }
+    );
   }
 
   deleteLeaveById(id: number | undefined): Observable<string> {
-    return this.http.delete(`${this.baseUrl}/leaveDeleteById/${id}`, {
-      headers: this.getAuthHeaders(),
-      responseType: "text",
-    });
+    return this.http.delete(
+      `http://localhost:8080/user/leaveDeleteById/${id}`,
+      {
+        headers: this.getAuthHeaders(),
+        responseType: "text",
+      }
+    );
   }
 }

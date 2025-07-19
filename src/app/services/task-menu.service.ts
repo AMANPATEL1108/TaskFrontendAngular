@@ -48,9 +48,12 @@ export class TaskMenuService {
 
   getAll(): Observable<TaskMenu[]> {
     console.log("Token Finded", this.getAuthHeaders());
-    return this.http.get<TaskMenu[]>(`${this.baseUrl}/admin/get-all-taskmenu`, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http.get<TaskMenu[]>(
+      `${this.baseUrl}/basic/get-all-taskmenu`,
+      {
+        headers: this.getAuthHeaders(),
+      }
+    );
   }
 
   addTaskToMenu(formData: FormData): Observable<Task> {
@@ -92,7 +95,7 @@ export class TaskMenuService {
 
   updateTaskMenu(menuId: number, tasks: Task[]): Observable<any> {
     return this.http.put(
-      `http://localhost:8080/admin/update-order/${menuId}`,
+      `http://localhost:8080/basic/update-order/${menuId}`,
       tasks,
       { headers: this.getAuthHeaders() }
     );
@@ -100,7 +103,7 @@ export class TaskMenuService {
 
   moveTaskToNewList(taskId: number, newMenuId: number): Observable<any> {
     return this.http.put(
-      `http://localhost:8080/admin/move/${taskId}`,
+      `http://localhost:8080/basic/move/${taskId}`,
       { newMenuId },
       {
         headers: this.getAuthHeaders(),

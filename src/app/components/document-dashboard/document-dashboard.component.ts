@@ -32,7 +32,7 @@ export class DocumentDashboardComponent implements OnInit {
 
   loadAll(): void {
     this.http
-      .get<any[]>("http://localhost:8080/admin/get-all-persons")
+      .get<any[]>("http://localhost:8080/basic/get-all-persons")
       .subscribe({
         next: (data) => {
           this.documents = data;

@@ -23,14 +23,16 @@ export class EmployeeSectionComponent {
   }
 
   loadAll(): void {
-    this.http.get<any[]>("http://localhost:8080/person/get-all").subscribe({
-      next: (data) => {
-        this.documents = data;
-      },
-      error: () => {
-        this.toastr.error("Failed to load documents", "Error");
-      },
-    });
+    this.http
+      .get<any[]>("http://localhost:8080/basic/get-all-persons")
+      .subscribe({
+        next: (data) => {
+          this.documents = data;
+        },
+        error: () => {
+          this.toastr.error("Failed to load documents", "Error");
+        },
+      });
   }
 
   viewDocuments(doc: any) {
